@@ -1,13 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { toast } from "sonner"
 import { createBook, updateBook } from "@/lib/actions/books"
 import { bookSchema, BookFormData } from "@/lib/schemas/books"
-import { Resolver } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -121,9 +119,16 @@ export function BookForm({ book, categories, onSuccess }: Readonly<BookFormProps
       </div>
       
       <div className="flex justify-end pt-4">
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving..." : (book ? "Save Changes" : "Add Book")}
-        </Button>
+        {(() => {
+          let btnText = "Add Book";
+          if (isLoading) btnText = "Saving...";
+          else if (book) btnText = "Save Changes";
+          return (
+            <Button type="submit" disabled={isLoading}>
+              {btnText}
+            </Button>
+          )
+        })()}
       </div>
     </form>
   )

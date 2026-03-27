@@ -3,9 +3,9 @@ import { Header } from "@/components/layout/header"
 
 export default function DashboardLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar />

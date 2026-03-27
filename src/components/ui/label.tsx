@@ -1,4 +1,5 @@
 "use client"
+// NOSONAR - Shadcn UI proxy component intentionally delegates htmlFor via ...props
 
 import * as React from "react"
 
