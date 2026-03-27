@@ -1,9 +1,14 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import bcrypt from 'bcrypt'
+import crypto from 'node:crypto'
 
 const adapter = new PrismaBetterSqlite3({ url: 'file:./dev.db' })
 const prisma = new PrismaClient({ adapter })
+
+function secureRandom() {
+  return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296;
+}
 
 const CATEGORIES = [
   { name: 'Science Fiction', description: 'Explore the future and outer space' },
@@ -20,7 +25,7 @@ const AUTHORS = ["John Doe", "Jane Smith", "Alice Johnson", "Robert Brown", "Emi
 const PUBLISHERS = ["Penguin", "HarperCollins", "Macmillan", "Simon & Schuster", "Hachette", "Oxford University Press", "Vintage Books", "Tor Books", "Orbit"];
 
 function getRandomItem<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(secureRandom() * arr.length)];
 }
 
 async function main() {
@@ -63,18 +68,18 @@ async function main() {
 
   for (let i = 0; i < 125; i++) {
     const title = `${getRandomItem(ADJECTIVES)} ${getRandomItem(NOUNS)} ${getRandomItem(SUFFIXES)}`
-    const stock = Math.floor(Math.random() * 8) + 1; // 1 to 8 copies
-    const availableStock = Math.random() > 0.8 ? Math.floor(Math.random() * stock) : stock; // Sometimes some are checked out
+    const stock = Math.floor(secureRandom() * 8) + 1; // 1 to 8 copies
+    const availableStock = secureRandom() > 0.8 ? Math.floor(secureRandom() * stock) : stock; // Sometimes some are checked out
     const category = getRandomItem(categoryRecords);
 
     booksToCreate.push({
       title: `${title} (Vol ${i+1})`,
       author: getRandomItem(AUTHORS),
-      publishedYear: Math.floor(Math.random() * 50) + 1974, // 1974 to 2023
+      publishedYear: Math.floor(secureRandom() * 50) + 1974, // 1974 to 2023
       publisher: getRandomItem(PUBLISHERS),
       stock: stock,
       availableStock: availableStock,
-      location: `Floor ${Math.floor(Math.random() * 4) + 1}, Shelf ${String.fromCodePoint(65 + Math.floor(Math.random() * 10))}`,
+      location: `Floor ${Math.floor(secureRandom() * 4) + 1}, Shelf ${String.fromCodePoint(65 + Math.floor(secureRandom() * 10))}`,
       categoryId: category.id,
       coverUrl: `https://picsum.photos/seed/${i + 1500}/300/400`
     })
