@@ -31,6 +31,7 @@ export async function createCategory(data: CategoryFormData) {
     revalidatePath('/categories')
     return { success: true }
   } catch (error) {
+    console.error("Categories creation error:", error)
     return { error: 'Failed to create category' }
   }
 }
@@ -46,6 +47,7 @@ export async function deleteCategory(id: string) {
     revalidatePath('/categories')
     return { success: true }
   } catch (error) {
+    console.error("Categories deletion error:", error)
     return { error: 'Failed to delete category' }
   }
 }

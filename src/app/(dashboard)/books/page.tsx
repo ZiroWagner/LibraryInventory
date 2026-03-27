@@ -16,7 +16,7 @@ export default async function BooksPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Books</h1>
-          <p className="text-muted-foreground">Manage your library's book inventory.</p>
+          <p className="text-muted-foreground">Manage your library&apos;s book inventory.</p>
         </div>
         <BookDialog categories={categories}>
           <Button>

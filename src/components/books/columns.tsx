@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { MoreHorizontal, Pencil, Trash, Eye, ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -12,19 +12,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
-import { deleteBook } from "@/lib/actions/books"
-import { toast } from "sonner"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
-import { Eye, ArrowUpDown } from "lucide-react"
+import { toast } from "sonner"
 
 import { useState } from "react"
-import { getCategories } from "@/lib/actions/books"
+import { getCategories, deleteBook } from "@/lib/actions/books"
 import { BookDialog } from "./book-dialog"
 
 export type BookRow = {
@@ -78,8 +75,8 @@ const ActionCell = ({ book }: { book: BookRow }) => {
               onClick={async () => { 
                 if (confirm("Are you sure you want to delete this book?")) {
                   const res = await deleteBook(book.id)
-                  if (!res.error) toast.success("Book deleted")
-                  else toast.error("Failed to delete")
+                  if (res.error) toast.error("Failed to delete")
+                  else toast.success("Book deleted")
                 }
               }} 
               className="text-destructive focus:text-destructive"
@@ -98,6 +95,7 @@ const ActionCell = ({ book }: { book: BookRow }) => {
           <div className="flex flex-col md:flex-row gap-6 py-4">
             <div className="w-full md:w-1/3 shrink-0">
               {book.coverUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={book.coverUrl} alt={book.title} className="w-full rounded-md object-cover shadow-sm aspect-[3/4]" />
               ) : (
                 <div className="w-full aspect-[3/4] bg-muted flex items-center justify-center rounded-md shadow-sm">
@@ -231,7 +229,7 @@ export const columns: ColumnDef<BookRow>[] = [
       )
     },
     cell: ({ row }) => {
-      const available = row.getValue("availableStock") as number
+      const available = row.original.availableStock
       const total = row.original.stock
       if (available === 0) {
         return <Badge variant="destructive">Out of Stock</Badge>

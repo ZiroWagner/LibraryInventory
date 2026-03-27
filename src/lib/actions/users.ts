@@ -17,6 +17,7 @@ export async function toggleUserRole(id: string, currentRole: string) {
     revalidatePath('/users')
     return { success: true }
   } catch (error) {
+    console.error("Toggle role error:", error)
     return { error: 'Failed to update user role' }
   }
 }
@@ -27,6 +28,7 @@ export async function deleteUser(id: string) {
     revalidatePath('/users')
     return { success: true }
   } catch (error) {
+    console.error("Delete user error:", error)
     return { error: 'Failed to delete user' }
   }
 }

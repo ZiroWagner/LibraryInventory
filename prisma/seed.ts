@@ -28,7 +28,7 @@ async function main() {
 
   // 1. Admin User
   const adminPassword = await bcrypt.hash('admin123', 10)
-  const admin = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@library.com' },
     update: {
       password: adminPassword,
@@ -74,7 +74,7 @@ async function main() {
       publisher: getRandomItem(PUBLISHERS),
       stock: stock,
       availableStock: availableStock,
-      location: `Floor ${Math.floor(Math.random() * 4) + 1}, Shelf ${String.fromCharCode(65 + Math.floor(Math.random() * 10))}`,
+      location: `Floor ${Math.floor(Math.random() * 4) + 1}, Shelf ${String.fromCodePoint(65 + Math.floor(Math.random() * 10))}`,
       categoryId: category.id,
       coverUrl: `https://picsum.photos/seed/${i + 1500}/300/400`
     })
@@ -105,12 +105,11 @@ async function main() {
   console.log('Total Books inserted:', createdBooks.count)
 }
 
-main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+try {
+  await main()
+} catch (e) {
+  console.error(e)
+  process.exit(1)
+} finally {
+  await prisma.$disconnect()
+}

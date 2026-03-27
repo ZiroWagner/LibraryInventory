@@ -33,12 +33,52 @@ type CategoryRow = {
   _count: { books: number }
 }
 
-export function CategoriesClient({ categories }: { categories: CategoryRow[] }) {
+const columns: ColumnDef<CategoryRow>[] = [
+  { accessorKey: "name", header: "Name" },
+  { accessorKey: "description", header: "Description" },
+  { 
+    accessorKey: "_count.books", 
+    header: "Books Count",
+    cell: ({ row }) => <Badge variant="secondary">{row.original._count.books} books</Badge>
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const category = row.original
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger render={
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          } />
+          <DropdownMenuContent align="end">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem onClick={async () => {
+                if (confirm("Delete this category?")) {
+                  const res = await deleteCategory(category.id)
+                  if (res.error) toast.error(res.error)
+                  else toast.success("Category deleted")
+                }
+              }} className="text-destructive">
+                <Trash className="mr-2 h-4 w-4" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    }
+  }
+]
+
+export function CategoriesClient({ categories }: Readonly<{ categories: CategoryRow[] }>) {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   
   const form = useForm<z.infer<typeof categorySchema>>({
-    resolver: zodResolver(categorySchema) as any,
+    resolver: zodResolver(categorySchema),
     defaultValues: { name: "", description: "" }
   })
 
@@ -54,46 +94,6 @@ export function CategoriesClient({ categories }: { categories: CategoryRow[] }) 
     }
   }
 
-  const columns: ColumnDef<CategoryRow>[] = [
-    { accessorKey: "name", header: "Name" },
-    { accessorKey: "description", header: "Description" },
-    { 
-      accessorKey: "_count.books", 
-      header: "Books Count",
-      cell: ({ row }) => <Badge variant="secondary">{row.original._count.books} books</Badge>
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const category = row.original
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger render={
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            } />
-            <DropdownMenuContent align="end">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={async () => {
-                  if (confirm("Delete this category?")) {
-                    const res = await deleteCategory(category.id)
-                    if (res.error) toast.error(res.error)
-                    else toast.success("Category deleted")
-                  }
-                }} className="text-destructive">
-                  <Trash className="mr-2 h-4 w-4" /> Delete
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
-      }
-    }
-  ]
-
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
@@ -103,7 +103,7 @@ export function CategoriesClient({ categories }: { categories: CategoryRow[] }) 
           } />
           <DialogContent>
             <DialogHeader><DialogTitle>New Category</DialogTitle></DialogHeader>
-            <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label>Name</Label>
                 <Input {...form.register("name")} />

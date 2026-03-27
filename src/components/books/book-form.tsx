@@ -3,9 +3,11 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { toast } from "sonner"
 import { createBook, updateBook } from "@/lib/actions/books"
 import { bookSchema, BookFormData } from "@/lib/schemas/books"
+import { Resolver } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,11 +19,11 @@ interface BookFormProps {
   onSuccess: () => void
 }
 
-export function BookForm({ book, categories, onSuccess }: BookFormProps) {
+export function BookForm({ book, categories, onSuccess }: Readonly<BookFormProps>) {
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<BookFormData>({
-    resolver: zodResolver(bookSchema) as any,
+    resolver: zodResolver(bookSchema) as unknown as Resolver<BookFormData>,
     defaultValues: book ? {
       title: book.title,
       author: book.author,
@@ -56,7 +58,7 @@ export function BookForm({ book, categories, onSuccess }: BookFormProps) {
         toast.success(book ? "Book updated successfully" : "Book added successfully")
         onSuccess()
       }
-    } catch (e) {
+    } catch {
       toast.error("An unexpected error occurred")
     } finally {
       setIsLoading(false)
@@ -64,7 +66,7 @@ export function BookForm({ book, categories, onSuccess }: BookFormProps) {
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-4">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="title">Title</Label>
